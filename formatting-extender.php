@@ -51,16 +51,16 @@ function formatting_extender_sanitize_css( $css ) {
 
     // Dangerous patterns that could lead to XSS or security issues
     $dangerous_patterns = array(
-        '/expression\s*\(/i',           // IE expression
-        '/javascript\s*:/i',            // JavaScript protocol
-        '/vbscript\s*:/i',              // VBScript protocol
-        '/behavior\s*:/i',              // IE behavior
-        '/-moz-binding/i',              // Firefox XBL binding
-        '/@import/i',                   // CSS import (could load external)
-        '/@charset/i',                  // Charset declaration
-        '/url\s*\(\s*["\']?\s*data:/i', // Data URLs in url()
-        '/url\s*\(\s*["\']?\s*javascript:/i', // JavaScript in url()
-        '/\\\\[0-9a-f]/i',              // Escaped characters that could bypass filters
+        '/expression\s*\(/i',
+        '/javascript\s*:/i',
+        '/vbscript\s*:/i',
+        '/behavior\s*:/i',
+        '/-moz-binding/i',
+        '/@import/i',
+        '/@charset/i',
+        '/url\s*\(\s*["\']?\s*data:/i',
+        '/url\s*\(\s*["\']?\s*javascript:/i',
+        '/\\\\[0-9a-f]/i',
     );
 
     foreach ( $dangerous_patterns as $pattern ) {
@@ -86,83 +86,75 @@ function formatting_extender_sanitize_css( $css ) {
  * @return string Block ID hash.
  */
 function formatting_extender_generate_block_id( $css ) {
-    $hash = abs( crc32( $css ) );
-    return dechex( strlen( $css ) ) . dechex( $hash );
+    return 'fe-' . substr( md5( $css ), 0, 8 );
 }
 
 /**
- * Extract custom CSS from block content and generate frontend styles.
- *
- * @since 2.1.0
- * @param string $content The post content.
- * @return string Modified content with custom CSS applied.
+ * Global storage for custom CSS to output.
  */
-function formatting_extender_render_custom_css( $content ) {
-    if ( empty( $content ) || is_admin() ) {
-        return $content;
+global $formatting_extender_styles;
+$formatting_extender_styles = array();
+
+/**
+ * Add data attribute to blocks with custom CSS and collect styles.
+ *
+ * @since 2.2.0
+ * @param string $block_content The block content.
+ * @param array  $block         The block data.
+ * @return string Modified block content.
+ */
+function formatting_extender_render_block( $block_content, $block ) {
+    global $formatting_extender_styles;
+
+    // Check if block has custom CSS
+    if ( empty( $block['attrs']['feCustomCSS'] ) ) {
+        return $block_content;
     }
 
-    // Parse blocks from content
-    $blocks = parse_blocks( $content );
-    if ( empty( $blocks ) ) {
-        return $content;
-    }
+    $css = $block['attrs']['feCustomCSS'];
+    $block_id = formatting_extender_generate_block_id( $css );
 
-    $custom_styles = array();
-    formatting_extender_collect_block_css( $blocks, $custom_styles );
-
-    if ( empty( $custom_styles ) ) {
-        return $content;
-    }
-
-    // Build optimized CSS output
-    $css_output = '';
-    foreach ( $custom_styles as $block_id => $css ) {
+    // Collect CSS for later output
+    if ( ! isset( $formatting_extender_styles[ $block_id ] ) ) {
         $sanitized_css = formatting_extender_sanitize_css( $css );
-        if ( empty( $sanitized_css ) || strpos( $sanitized_css, 'removed for security' ) !== false ) {
-            continue;
+        if ( ! empty( $sanitized_css ) && strpos( $sanitized_css, 'removed for security' ) === false ) {
+            $selector = '[data-fe-block-id="' . esc_attr( $block_id ) . '"]';
+            $scoped_css = str_replace( '%root%', $selector, $sanitized_css );
+            $scoped_css = str_replace( '%ROOT%', $selector, $scoped_css );
+            $formatting_extender_styles[ $block_id ] = $scoped_css;
         }
-
-        // Replace selector placeholder with actual selector
-        $selector = '[data-fe-block-id="' . esc_attr( $block_id ) . '"]';
-        $scoped_css = str_replace( '%root%', $selector, $sanitized_css );
-        $scoped_css = str_replace( '%ROOT%', $selector, $scoped_css );
-
-        $css_output .= $scoped_css . "\n";
     }
 
-    if ( ! empty( $css_output ) ) {
-        // Add styles to footer for better performance (non-blocking)
-        add_action( 'wp_footer', function() use ( $css_output ) {
-            echo '<style id="fe-custom-block-css">' . "\n" . $css_output . '</style>' . "\n";
-        }, 100 );
+    // Add data attribute to the block's first HTML tag
+    if ( ! empty( $block_content ) ) {
+        $block_content = preg_replace(
+            '/^(<[a-z][a-z0-9]*\s)/i',
+            '$1data-fe-block-id="' . esc_attr( $block_id ) . '" ',
+            $block_content,
+            1
+        );
     }
 
-    return $content;
+    return $block_content;
 }
+add_filter( 'render_block', 'formatting_extender_render_block', 10, 2 );
 
 /**
- * Recursively collect custom CSS from blocks and inner blocks.
+ * Output collected custom CSS in the footer.
  *
- * @since 2.1.0
- * @param array $blocks Array of block data.
- * @param array $custom_styles Reference to collected styles array.
+ * @since 2.2.0
  */
-function formatting_extender_collect_block_css( $blocks, &$custom_styles ) {
-    foreach ( $blocks as $block ) {
-        if ( ! empty( $block['attrs']['feCustomCSS'] ) ) {
-            $css = $block['attrs']['feCustomCSS'];
-            $block_id = formatting_extender_generate_block_id( $css );
-            $custom_styles[ $block_id ] = $css;
-        }
+function formatting_extender_output_styles() {
+    global $formatting_extender_styles;
 
-        // Process inner blocks recursively
-        if ( ! empty( $block['innerBlocks'] ) ) {
-            formatting_extender_collect_block_css( $block['innerBlocks'], $custom_styles );
-        }
+    if ( empty( $formatting_extender_styles ) ) {
+        return;
     }
+
+    $css_output = implode( "\n", $formatting_extender_styles );
+    echo '<style id="fe-custom-block-css">' . "\n" . $css_output . "\n" . '</style>' . "\n";
 }
-add_filter( 'the_content', 'formatting_extender_render_custom_css', 5 );
+add_action( 'wp_footer', 'formatting_extender_output_styles', 100 );
 
 /**
  * Enqueue block editor assets for formatting controls.
