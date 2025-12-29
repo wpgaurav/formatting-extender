@@ -15,51 +15,48 @@
  * @wordpress-plugin
  * Plugin Name:       Formatting Extender
  * Plugin URI:        https://gauravtiwari.org/snippet/formatting-extender/
- * Description:       This plugin extends the Block Editor formatting toolbar by adding new inline formatting controls like badge, highlights etc. and more.
- * Version:           1.0.3
+ * Description:       Extends the Block Editor formatting toolbar with inline formatting controls like badges and highlights. Uses inline styles for better performance.
+ * Version:           2.0.0
  * Author:            Gaurav Tiwari
  * Author URI:        https://gauravtiwari.org
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       formatting-extender
+ * Requires at least: 5.8
+ * Tested up to:      6.9
+ * Requires PHP:      7.4
  */
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
     die;
 }
-define( 'FORMATTING_EXTENDER_VERSION', '1.0.3' );
 
-//  Functions
-function formatting_extender_classes() {
-	// Load the compiled blocks into the editor.
-	wp_enqueue_script(
-		'fe-highlight-js',
-		plugins_url('/js/highlight.js', __FILE__),
-		array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-editor' ),
-		'1.0.2',
-		true
-	);
-	wp_enqueue_script(
-		'fe-badge-js',
-		plugins_url('/js/badge.js',  __FILE__),
-		array( 'wp-blocks', 'wp-element', 'wp-components', 'wp-editor' ),
-		'1.0.2',
-		true
-	);
+define( 'FORMATTING_EXTENDER_VERSION', '2.0.0' );
 
-        // Load the compiled styles into the editor
-        wp_enqueue_style(
-		'fe-extend-css',
-		plugins_url('/css/styles.css', __FILE__),
-		array( 'wp-edit-blocks' )
-	);
+/**
+ * Enqueue block editor assets for formatting controls.
+ *
+ * @since 1.0.0
+ * @since 2.0.0 Updated to use wp-block-editor dependency, removed CSS dependency.
+ */
+function formatting_extender_enqueue_editor_assets() {
+    $asset_version = FORMATTING_EXTENDER_VERSION;
 
+    wp_enqueue_script(
+        'formatting-extender-highlight',
+        plugins_url( 'js/highlight.js', __FILE__ ),
+        array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-rich-text' ),
+        $asset_version,
+        true
+    );
+
+    wp_enqueue_script(
+        'formatting-extender-badge',
+        plugins_url( 'js/badge.js', __FILE__ ),
+        array( 'wp-blocks', 'wp-element', 'wp-block-editor', 'wp-rich-text' ),
+        $asset_version,
+        true
+    );
 }
-add_action('enqueue_block_editor_assets', 'formatting_extender_classes');
-function formatting_extender_frontend(){?>
-<style>
-	.fe-badge{background-color: #3333aa;border-radius: 2px;color: #ffffff;margin-left: 4px;font-size: 13px;padding: 3px 5px 3px 4px;position: relative;text-transform: uppercase;}a.fe-badge{ border: 0; }.fe-highlight{background:rgb(247, 220, 72);padding:0 3px; color:#111111}
-</style>
-<?php }
-add_action('wp_footer', 'formatting_extender_frontend');
+add_action( 'enqueue_block_editor_assets', 'formatting_extender_enqueue_editor_assets' );
