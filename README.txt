@@ -4,7 +4,7 @@ Donate link: https://gauravtiwari.org/donate/
 Tags: gutenberg, block-editor, formatting, highlight, badge, custom-css
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -90,6 +90,11 @@ The plugin is optimized for performance. All custom CSS is collected and output 
 
 == Changelog ==
 
+= 2.2.1 =
+* Fix: Custom CSS now correctly applies on frontend
+* Fix: Use render_block filter for reliable attribute injection
+* Improved: Consistent block ID generation between editor and frontend
+
 = 2.2.0 =
 * New: Per-block custom CSS panel in the sidebar
 * New: Use %root% placeholder for scoped block styling
@@ -129,6 +134,9 @@ The plugin is optimized for performance. All custom CSS is collected and output 
 * First version
 
 == Upgrade Notice ==
+
+= 2.2.1 =
+Bugfix: Custom CSS now correctly applies on the frontend.
 
 = 2.2.0 =
 New feature: Add custom CSS to any block! Includes security improvements and performance optimizations.
