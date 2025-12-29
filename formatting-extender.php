@@ -127,9 +127,10 @@ function formatting_extender_render_block( $block_content, $block ) {
 
     // Add data attribute to the block's first HTML tag
     if ( ! empty( $block_content ) ) {
+        // Handle tags with existing attributes (e.g., <p class="foo">)
         $block_content = preg_replace(
-            '/^(<[a-z][a-z0-9]*\s)/i',
-            '$1data-fe-block-id="' . esc_attr( $block_id ) . '" ',
+            '/^(<[a-z][a-z0-9]*)([\s>])/i',
+            '$1 data-fe-block-id="' . esc_attr( $block_id ) . '"$2',
             $block_content,
             1
         );
