@@ -16,7 +16,7 @@
  * Plugin Name:       Formatting Extender
  * Plugin URI:        https://gauravtiwari.org/snippet/formatting-extender/
  * Description:       Extends the Block Editor with inline formatting controls (badges, highlights) and per-block custom CSS. Uses inline styles for performance.
- * Version:           2.2.1
+ * Version:           2.2.2
  * Author:            Gaurav Tiwari
  * Author URI:        https://gauravtiwari.org
  * License:           GPL-2.0+
@@ -32,7 +32,7 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
-define( 'FORMATTING_EXTENDER_VERSION', '2.2.1' );
+define( 'FORMATTING_EXTENDER_VERSION', '2.2.2' );
 
 /**
  * Sanitize CSS to prevent XSS and other security issues.
@@ -127,9 +127,10 @@ function formatting_extender_render_block( $block_content, $block ) {
 
     // Add data attribute to the block's first HTML tag
     if ( ! empty( $block_content ) ) {
+        // Handle tags with existing attributes (e.g., <p class="foo">)
         $block_content = preg_replace(
-            '/^(<[a-z][a-z0-9]*\s)/i',
-            '$1data-fe-block-id="' . esc_attr( $block_id ) . '" ',
+            '/^(<[a-z][a-z0-9]*)([\s>])/i',
+            '$1 data-fe-block-id="' . esc_attr( $block_id ) . '"$2',
             $block_content,
             1
         );
