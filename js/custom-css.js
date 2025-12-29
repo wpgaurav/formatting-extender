@@ -42,8 +42,8 @@
             var setAttributes = props.setAttributes;
             var customCSS = attributes.feCustomCSS || '';
 
-            // Generate unique selector for this block
-            var blockSelector = '.wp-block[data-fe-block-id="' + clientId.substring( 0, 8 ) + '"]';
+            // Use clientId for editor preview (PHP uses different ID for frontend)
+            var editorBlockSelector = '#block-' + clientId;
 
             // State for CSS validation (warning only, doesn't block saving)
             var validationState = useState( { hasWarning: false, message: '' } );
@@ -119,16 +119,17 @@
 
             // Apply CSS in editor preview
             useEffect( function() {
+                var styleId = 'fe-custom-css-' + clientId;
+
                 if ( ! customCSS ) {
                     // Remove any existing style
-                    var existingStyle = document.getElementById( 'fe-custom-css-' + clientId.substring( 0, 8 ) );
+                    var existingStyle = document.getElementById( styleId );
                     if ( existingStyle ) {
                         existingStyle.remove();
                     }
                     return;
                 }
 
-                var styleId = 'fe-custom-css-' + clientId.substring( 0, 8 );
                 var styleEl = document.getElementById( styleId );
 
                 if ( ! styleEl ) {
@@ -137,10 +138,9 @@
                     document.head.appendChild( styleEl );
                 }
 
-                // Scope CSS to this block in editor
-                var scopedCSS = customCSS.replace( /%root%/g, blockSelector );
-                // Also support %ROOT% uppercase
-                scopedCSS = scopedCSS.replace( /%ROOT%/g, blockSelector );
+                // Scope CSS to this block in editor using block wrapper ID
+                var scopedCSS = customCSS.replace( /%root%/g, editorBlockSelector );
+                scopedCSS = scopedCSS.replace( /%ROOT%/g, editorBlockSelector );
 
                 styleEl.textContent = scopedCSS;
 
@@ -244,34 +244,6 @@
         'editor.BlockEdit',
         'formatting-extender/custom-css-panel',
         CustomCSSPanel
-    );
-
-    // Add data attribute to block wrapper for frontend targeting
-    function addBlockDataAttribute( extraProps, blockType, attributes ) {
-        if ( attributes.feCustomCSS && attributes.feCustomCSS.trim() !== '' ) {
-            // Generate consistent ID from block's unique identifier
-            var blockId = attributes.feCustomCSS.length.toString( 16 ) +
-                          Math.abs( hashCode( attributes.feCustomCSS ) ).toString( 16 ).substring( 0, 6 );
-            extraProps['data-fe-block-id'] = blockId;
-        }
-        return extraProps;
-    }
-
-    // Simple hash function for consistent ID generation
-    function hashCode( str ) {
-        var hash = 0;
-        for ( var i = 0; i < str.length; i++ ) {
-            var char = str.charCodeAt( i );
-            hash = ( ( hash << 5 ) - hash ) + char;
-            hash = hash & hash;
-        }
-        return hash;
-    }
-
-    addFilter(
-        'blocks.getSaveContent.extraProps',
-        'formatting-extender/add-block-data-attribute',
-        addBlockDataAttribute
     );
 
 } )( window.wp );
