@@ -4,7 +4,7 @@ Donate link: https://gauravtiwari.org/donate/
 Tags: gutenberg, block-editor, formatting, highlight, badge, custom-css
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 2.1.0
+Stable tag: 2.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -90,7 +90,7 @@ The plugin is optimized for performance. All custom CSS is collected and output 
 
 == Changelog ==
 
-= 2.1.0 =
+= 2.2.0 =
 * New: Per-block custom CSS panel in the sidebar
 * New: Use %root% placeholder for scoped block styling
 * New: Live CSS preview in the editor
@@ -98,6 +98,11 @@ The plugin is optimized for performance. All custom CSS is collected and output 
 * New: Debounced validation - no interruptions while typing
 * Performance: Single consolidated style output in footer
 * Security: Comprehensive dangerous pattern detection
+
+= 2.1.0 =
+* WordPress 6.9 compatibility
+* Migrated from wp-editor to wp-block-editor API
+* Replaced CSS classes with inline styles
 
 = 2.0.0 =
 * Major update for WordPress 6.9 compatibility
@@ -125,7 +130,7 @@ The plugin is optimized for performance. All custom CSS is collected and output 
 
 == Upgrade Notice ==
 
-= 2.1.0 =
+= 2.2.0 =
 New feature: Add custom CSS to any block! Includes security improvements and performance optimizations.
 
 = 2.0.0 =
