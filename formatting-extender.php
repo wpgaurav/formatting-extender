@@ -125,8 +125,8 @@ function formatting_extender_render_custom_css( $content ) {
 
         // Replace selector placeholder with actual selector
         $selector = '[data-fe-block-id="' . esc_attr( $block_id ) . '"]';
-        $scoped_css = str_replace( '{{SELECTOR}}', $selector, $sanitized_css );
-        $scoped_css = str_replace( '{{selector}}', $selector, $scoped_css );
+        $scoped_css = str_replace( '%root%', $selector, $sanitized_css );
+        $scoped_css = str_replace( '%ROOT%', $selector, $scoped_css );
 
         $css_output .= $scoped_css . "\n";
     }

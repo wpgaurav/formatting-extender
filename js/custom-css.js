@@ -3,6 +3,7 @@
     var Fragment = wp.element.Fragment;
     var useState = wp.element.useState;
     var useEffect = wp.element.useEffect;
+    var useRef = wp.element.useRef;
     var InspectorControls = wp.blockEditor.InspectorControls;
     var PanelBody = wp.components.PanelBody;
     var TextareaControl = wp.components.TextareaControl;
@@ -43,64 +44,82 @@
 
             // Generate unique selector for this block
             var blockSelector = '.wp-block[data-fe-block-id="' + clientId.substring( 0, 8 ) + '"]';
-            var frontendSelector = '[data-fe-block-id="' + clientId.substring( 0, 8 ) + '"]';
 
-            // State for CSS validation
-            var validationState = useState( { isValid: true, message: '' } );
+            // State for CSS validation (warning only, doesn't block saving)
+            var validationState = useState( { hasWarning: false, message: '' } );
             var validation = validationState[0];
             var setValidation = validationState[1];
 
-            // Validate CSS (basic security check)
+            // Ref for debounce timer
+            var debounceRef = useRef( null );
+
+            // Validate CSS (basic security check) - returns warning, doesn't block
             function validateCSS( css ) {
                 if ( ! css || css.trim() === '' ) {
-                    return { isValid: true, message: '' };
+                    return { hasWarning: false, message: '' };
                 }
 
                 // Check for potentially dangerous patterns
                 var dangerousPatterns = [
-                    /expression\s*\(/i,
-                    /javascript\s*:/i,
-                    /behavior\s*:/i,
-                    /-moz-binding/i,
-                    /@import/i,
-                    /@charset/i,
-                    /url\s*\(\s*["']?\s*data:/i
+                    { pattern: /expression\s*\(/i, msg: 'CSS expressions are not allowed.' },
+                    { pattern: /javascript\s*:/i, msg: 'JavaScript URLs are not allowed.' },
+                    { pattern: /behavior\s*:/i, msg: 'IE behaviors are not allowed.' },
+                    { pattern: /-moz-binding/i, msg: 'XBL bindings are not allowed.' },
+                    { pattern: /@import/i, msg: '@import is not allowed.' },
+                    { pattern: /@charset/i, msg: '@charset is not allowed.' },
+                    { pattern: /url\s*\(\s*["']?\s*data:/i, msg: 'Data URLs are not allowed.' }
                 ];
 
                 for ( var i = 0; i < dangerousPatterns.length; i++ ) {
-                    if ( dangerousPatterns[i].test( css ) ) {
+                    if ( dangerousPatterns[i].pattern.test( css ) ) {
                         return {
-                            isValid: false,
-                            message: 'Potentially unsafe CSS detected. Avoid using expressions, JavaScript, or external resources.'
+                            hasWarning: true,
+                            message: dangerousPatterns[i].msg
                         };
                     }
                 }
 
-                // Check for balanced braces
+                // Check for balanced braces (warning only)
                 var openBraces = ( css.match( /\{/g ) || [] ).length;
                 var closeBraces = ( css.match( /\}/g ) || [] ).length;
                 if ( openBraces !== closeBraces ) {
                     return {
-                        isValid: false,
-                        message: 'Unbalanced braces detected. Please check your CSS syntax.'
+                        hasWarning: true,
+                        message: 'Unbalanced braces: ' + openBraces + ' opening, ' + closeBraces + ' closing.'
                     };
                 }
 
-                return { isValid: true, message: '' };
+                return { hasWarning: false, message: '' };
             }
 
             function onCSSChange( newCSS ) {
-                var result = validateCSS( newCSS );
-                setValidation( result );
+                // Always save the CSS immediately
+                setAttributes( { feCustomCSS: newCSS } );
 
-                if ( result.isValid ) {
-                    setAttributes( { feCustomCSS: newCSS } );
+                // Clear any pending validation
+                if ( debounceRef.current ) {
+                    clearTimeout( debounceRef.current );
                 }
+
+                // Debounce validation - wait 800ms after user stops typing
+                debounceRef.current = setTimeout( function() {
+                    var result = validateCSS( newCSS );
+                    setValidation( result );
+                }, 800 );
             }
+
+            // Cleanup debounce on unmount
+            useEffect( function() {
+                return function() {
+                    if ( debounceRef.current ) {
+                        clearTimeout( debounceRef.current );
+                    }
+                };
+            }, [] );
 
             // Apply CSS in editor preview
             useEffect( function() {
-                if ( ! customCSS || ! validation.isValid ) {
+                if ( ! customCSS ) {
                     // Remove any existing style
                     var existingStyle = document.getElementById( 'fe-custom-css-' + clientId.substring( 0, 8 ) );
                     if ( existingStyle ) {
@@ -119,9 +138,9 @@
                 }
 
                 // Scope CSS to this block in editor
-                var scopedCSS = customCSS.replace( /\{\{SELECTOR\}\}/g, blockSelector );
-                // Also support {{selector}} lowercase
-                scopedCSS = scopedCSS.replace( /\{\{selector\}\}/g, blockSelector );
+                var scopedCSS = customCSS.replace( /%root%/g, blockSelector );
+                // Also support %ROOT% uppercase
+                scopedCSS = scopedCSS.replace( /%ROOT%/g, blockSelector );
 
                 styleEl.textContent = scopedCSS;
 
@@ -132,7 +151,7 @@
                         el.remove();
                     }
                 };
-            }, [ customCSS, clientId, validation.isValid ] );
+            }, [ customCSS, clientId ] );
 
             return el(
                 Fragment,
@@ -162,7 +181,7 @@
                                 }
                             },
                             el( 'strong', { style: { display: 'block', marginBottom: '4px', fontSize: '11px' } }, 'Block Selector:' ),
-                            el( 'code', { style: { color: '#1e40af' } }, '{{SELECTOR}}' )
+                            el( 'code', { style: { color: '#1e40af' } }, '%root%' )
                         ),
                         el(
                             'p',
@@ -173,7 +192,7 @@
                                     marginBottom: '12px'
                                 }
                             },
-                            'Use {{SELECTOR}} as placeholder for the block selector. Example:'
+                            'Use %root% as placeholder for the block selector. Example:'
                         ),
                         el(
                             'pre',
@@ -189,12 +208,12 @@
                                     whiteSpace: 'pre-wrap'
                                 }
                             },
-                            '{{SELECTOR}} {\n  background: #f5f5f5;\n  padding: 20px;\n}\n\n{{SELECTOR}} p {\n  color: #333;\n}'
+                            '%root% {\n  background: #f5f5f5;\n  padding: 20px;\n}\n\n%root% p {\n  color: #333;\n}'
                         ),
-                        ! validation.isValid && el(
+                        validation.hasWarning && el(
                             Notice,
                             {
-                                status: 'error',
+                                status: 'warning',
                                 isDismissible: false,
                                 style: { marginBottom: '12px' }
                             },
@@ -208,7 +227,7 @@
                                 value: customCSS,
                                 onChange: onCSSChange,
                                 rows: 8,
-                                placeholder: '{{SELECTOR}} {\n  /* Your CSS here */\n}',
+                                placeholder: '%root% {\n  /* Your CSS here */\n}',
                                 style: {
                                     fontFamily: 'monospace',
                                     fontSize: '12px'
