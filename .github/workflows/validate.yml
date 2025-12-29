@@ -1,0 +1,109 @@
+name: Validate
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  validate:
+    name: Validate Plugin
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: Validate PHP syntax
+        run: |
+          find . -name "*.php" -not -path "./vendor/*" | while read file; do
+            php -l "$file" || exit 1
+          done
+
+      - name: Check version consistency
+        run: |
+          # Get versions from different sources
+          PLUGIN_VERSION=$(grep -oP "Version:\s*\K[0-9.]+" formatting-extender.php)
+          CONSTANT_VERSION=$(grep -oP "FORMATTING_EXTENDER_VERSION',\s*'\K[0-9.]+" formatting-extender.php)
+          README_VERSION=$(grep -oP "Stable tag:\s*\K[0-9.]+" README.txt)
+
+          echo "Plugin header version: $PLUGIN_VERSION"
+          echo "Constant version: $CONSTANT_VERSION"
+          echo "README stable tag: $README_VERSION"
+
+          # Check all versions match
+          if [ "$PLUGIN_VERSION" != "$CONSTANT_VERSION" ]; then
+            echo "Error: Plugin version ($PLUGIN_VERSION) does not match constant ($CONSTANT_VERSION)"
+            exit 1
+          fi
+
+          if [ "$PLUGIN_VERSION" != "$README_VERSION" ]; then
+            echo "Error: Plugin version ($PLUGIN_VERSION) does not match README ($README_VERSION)"
+            exit 1
+          fi
+
+          echo "All versions match: $PLUGIN_VERSION"
+
+      - name: Validate JavaScript syntax
+        run: |
+          # Install Node for syntax checking
+          for file in js/*.js; do
+            node --check "$file" || exit 1
+            echo "Validated: $file"
+          done
+
+      - name: Check for security patterns
+        run: |
+          # Check for common security issues in PHP
+          ISSUES=0
+
+          # Check for eval usage
+          if grep -rn "eval\s*(" --include="*.php" .; then
+            echo "Warning: eval() usage detected"
+            ISSUES=$((ISSUES + 1))
+          fi
+
+          # Check for direct $_GET/$_POST without sanitization
+          if grep -rn '\$_GET\[' --include="*.php" . | grep -v "sanitize\|esc_\|wp_"; then
+            echo "Warning: Unsanitized \$_GET usage may exist"
+          fi
+
+          if grep -rn '\$_POST\[' --include="*.php" . | grep -v "sanitize\|esc_\|wp_"; then
+            echo "Warning: Unsanitized \$_POST usage may exist"
+          fi
+
+          echo "Security check completed"
+
+      - name: Verify required files exist
+        run: |
+          REQUIRED_FILES=(
+            "formatting-extender.php"
+            "index.php"
+            "uninstall.php"
+            "README.txt"
+            "LICENSE.txt"
+            "js/highlight.js"
+            "js/badge.js"
+            "js/custom-css.js"
+          )
+
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Error: Required file missing: $file"
+              exit 1
+            fi
+            echo "Found: $file"
+          done
+
+          echo "All required files present"

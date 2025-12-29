@@ -28,18 +28,18 @@ Add custom CSS to any block directly from the sidebar! Each block gets its own "
 
 1. Select any block in the editor
 2. Open the "Custom CSS" panel in the sidebar
-3. Write CSS using `{{SELECTOR}}` as the block selector placeholder
+3. Write CSS using `%root%` as the block selector placeholder
 4. Your CSS is automatically scoped to that specific block
 
 **Example:**
 
-`{{SELECTOR}} {
+`%root% {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 2rem;
   border-radius: 8px;
 }
 
-{{SELECTOR}} p {
+%root% p {
   color: white;
 }`
 
@@ -68,7 +68,7 @@ Select text in the Block Editor, click the dropdown arrow in the toolbar, and ch
 
 = How do I add custom CSS to a block? =
 
-Select any block, then look for the "Custom CSS" panel in the right sidebar. Use `{{SELECTOR}}` as a placeholder that will be replaced with the actual block selector.
+Select any block, then look for the "Custom CSS" panel in the right sidebar. Use `%root%` as a placeholder that will be replaced with the actual block selector.
 
 = Is the custom CSS secure? =
 
@@ -92,10 +92,10 @@ The plugin is optimized for performance. All custom CSS is collected and output 
 
 = 2.1.0 =
 * New: Per-block custom CSS panel in the sidebar
-* New: Use {{SELECTOR}} placeholder for scoped block styling
+* New: Use %root% placeholder for scoped block styling
 * New: Live CSS preview in the editor
 * New: Secure CSS sanitization (blocks XSS, JavaScript, imports)
-* New: Client-side CSS validation with helpful error messages
+* New: Debounced validation - no interruptions while typing
 * Performance: Single consolidated style output in footer
 * Security: Comprehensive dangerous pattern detection
 
