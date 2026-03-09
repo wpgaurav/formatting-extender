@@ -1,0 +1,24 @@
+{
+	"extends": "plugin:@wordpress/eslint-plugin/recommended",
+	"settings": {
+		"import/resolver": {
+			"node": {
+				"extensions": [ ".js", ".jsx" ]
+			}
+		},
+		"import/core-modules": [
+			"@wordpress/element",
+			"@wordpress/block-editor",
+			"@wordpress/rich-text",
+			"@wordpress/components",
+			"@wordpress/data",
+			"@wordpress/i18n",
+			"@wordpress/icons"
+		]
+	},
+	"rules": {
+		"import/no-unresolved": [ "error", {
+			"ignore": [ "^@wordpress/" ]
+		}]
+	}
+}

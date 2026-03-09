@@ -18,3 +18,57 @@ a.fe-badge {
 	padding: 0 3px;
 	color: #111111;
 }
+
+/* Add Class Popover */
+.fe-add-class-popover .components-popover__content {
+	padding: 16px;
+	min-width: 280px;
+}
+
+.fe-add-class-form {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.fe-add-class-form .components-text-control__input {
+	font-family: monospace;
+}
+
+.fe-class-suggestions {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	max-height: 240px;
+	overflow-y: auto;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	background: #fff;
+}
+
+.fe-class-suggestion {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 6px 10px;
+	cursor: pointer;
+	transition: background-color 0.1s;
+}
+
+.fe-class-suggestion:hover,
+.fe-class-suggestion.is-selected {
+	background-color: #f0f0f0;
+}
+
+.fe-class-suggestion-name {
+	font-family: monospace;
+	font-size: 12px;
+	color: #1e1e1e;
+}
+
+.fe-class-suggestion-category {
+	font-size: 11px;
+	color: #757575;
+	white-space: nowrap;
+}

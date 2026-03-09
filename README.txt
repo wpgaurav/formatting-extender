@@ -1,9 +1,9 @@
 === Formatting Extender ===
-Contributors: developer starter developer developer developer/developer
+Contributors: gauravtiwari
 Donate link: https://gauravtiwari.org/donate/
 Tags: gutenberg, block-editor, formatting, badge, highlight
 Requires at least: 6.0
-Tested up to: 6.7.2
+Tested up to: 6.9.1
 Stable tag: 2.0.0
 Requires PHP: 7.4
 License: GPLv2 or later

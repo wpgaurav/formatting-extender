@@ -55,6 +55,13 @@ function formatting_extender_editor_assets() {
 			$asset['version']
 		);
 	}
+
+	$classes = apply_filters( 'formatting_extender_css_classes', array() );
+	if ( ! empty( $classes ) ) {
+		wp_localize_script( 'formatting-extender', 'formattingExtender', array(
+			'classes' => $classes,
+		) );
+	}
 }
 
 function formatting_extender_frontend_styles() {
