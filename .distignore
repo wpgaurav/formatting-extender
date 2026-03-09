@@ -1,0 +1,31 @@
+# Development
+.git
+.github
+.gitignore
+.distignore
+src
+node_modules
+
+# Build tools
+build.sh
+package.json
+package-lock.json
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Claude Code
+CLAUDE.md
+.claude/
+
+# Misc
+*.md
+*.log
+*.zip
+*.swp
+*~
+.wordpress-org/
+LICENSE.txt

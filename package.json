@@ -1,0 +1,13 @@
+{
+	"name": "formatting-extender",
+	"version": "2.0.0",
+	"private": true,
+	"scripts": {
+		"build": "wp-scripts build",
+		"start": "wp-scripts start"
+	},
+	"devDependencies": {
+		"@wordpress/icons": "^11.6.0",
+		"@wordpress/scripts": "^31.4.0"
+	}
+}
