@@ -8,7 +8,7 @@
  * Plugin Name:       Formatting Extender
  * Plugin URI:        https://gauravtiwari.org/snippet/formatting-extender/
  * Description:       Extends the Block Editor formatting toolbar with inline controls: badge, highlight, and more.
- * Version:           2.0.0
+ * Version:           3.0.0
  * Author:            Gaurav Tiwari
  * Author URI:        https://gauravtiwari.org
  * License:           GPL-2.0+
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'FORMATTING_EXTENDER_VERSION', '2.0.0' );
+define( 'FORMATTING_EXTENDER_VERSION', '3.0.0' );
 define( 'FORMATTING_EXTENDER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'FORMATTING_EXTENDER_URL', plugin_dir_url( __FILE__ ) );
 

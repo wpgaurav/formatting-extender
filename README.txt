@@ -4,7 +4,7 @@ Donate link: https://gauravtiwari.org/donate/
 Tags: gutenberg, block-editor, formatting, badge, highlight
 Requires at least: 6.0
 Tested up to: 6.9.1
-Stable tag: 2.0.0
+Stable tag: 3.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -34,6 +34,13 @@ Formatting Extender adds new inline formatting options to the WordPress Block Ed
 2. Text with badge and highlight formatting applied.
 
 == Changelog ==
+
+= 3.0.0 =
+* Added CSS class adder tool to the formatting toolbar
+* Apply CSS classes to selected text or entire blocks
+* Extensible class suggestions via `formatting_extender_css_classes` filter
+* Keyboard navigation and accessible ARIA roles for suggestions
+* Added ESLint configuration for WordPress coding standards
 
 = 2.0.0 =
 * Modernized build system with @wordpress/scripts
