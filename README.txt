@@ -2,9 +2,9 @@
 Contributors: gauravtiwari
 Donate link: https://gauravtiwari.org/donate/
 Tags: gutenberg, block-editor, formatting, badge, highlight
-Requires at least: 6.0
-Tested up to: 6.9.1
-Stable tag: 3.0.0
+Requires at least: 6.6
+Tested up to: 7.1
+Stable tag: 3.0.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -20,7 +20,9 @@ Formatting Extender adds new inline formatting options to the WordPress Block Ed
 * **Badge** — Wraps text in an uppercase badge with colored background
 * **Highlight** — Adds a yellow highlight behind text
 * Zero configuration, no settings pages
-* Lightweight — only loads in the block editor
+* Editable CSS classes with keyboard-accessible suggestions
+* Theme-palette colors and badge presets
+* Editor-only JavaScript, with shared lightweight content CSS
 
 == Installation ==
 
@@ -33,7 +35,32 @@ Formatting Extender adds new inline formatting options to the WordPress Block Ed
 1. Select text and click the down arrow on the toolbar to see formatting options.
 2. Text with badge and highlight formatting applied.
 
+== Frequently Asked Questions ==
+
+= Does this plugin create CSS for my classes? =
+No. Your theme or another plugin must provide those styles in the editor and on the frontend. Suggestions can be supplied with the formatting_extender_css_classes PHP filter.
+
+= Can I edit or remove classes? =
+Yes. Select text (or place the caret in an existing formatted span), open CSS classes, and edit or clear them. Choose Block to edit the selected block's custom classes. Mixed text selections explicitly replace only custom classes; other formatting is preserved.
+
+= Can I change badge and highlight colors? =
+Yes. Apply the format, then open Badge appearance or Highlight appearance in the block toolbar. Choose theme colors or custom colors, preview contrast, and apply or reset. Badge presets provide Neutral, Info, Success, and Warning colors.
+
+= What happens when I deactivate the plugin? =
+Text and saved classes remain. The plugin's default CSS is no longer loaded. Explicit inline colors remain in saved content.
+
 == Changelog ==
+
+= 3.0.1 =
+* Fixed editor iframe styling by sharing content CSS with the frontend.
+* Added editing, removal, deduplication, and explicit text/block scope for CSS classes.
+* Improved class suggestions, keyboard navigation, accessibility, and malformed catalog handling.
+* Added theme-palette colors, contrast feedback, badge presets, and color reset.
+* Added translatable UI and documented theme CSS variables.
+* Corrected the minimum WordPress version to 6.6 for the generated JSX runtime.
+* Added clean handling of incomplete source installations.
+* Updated build tooling and added regression checks, deterministic ZIP packaging, and stable-only deployment guards.
+
 
 = 3.0.0 =
 * Added CSS class adder tool to the formatting toolbar

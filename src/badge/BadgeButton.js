@@ -1,3 +1,5 @@
+import { __ } from '@wordpress/i18n';
+import { Appearance } from '../shared/Appearance';
 import { useCallback } from '@wordpress/element';
 import { RichTextToolbarButton } from '@wordpress/block-editor';
 import { toggleFormat } from '@wordpress/rich-text';
@@ -11,11 +13,22 @@ export function BadgeButton( { isActive, value, onChange } ) {
 	}, [ value, onChange ] );
 
 	return (
-		<RichTextToolbarButton
-			icon={ tag }
-			title="Badge"
-			onClick={ onToggle }
-			isActive={ isActive }
-		/>
+		<>
+			<RichTextToolbarButton
+				icon={ tag }
+				title={ __( 'Badge', 'formatting-extender' ) }
+				onClick={ onToggle }
+				isActive={ isActive }
+			/>
+			{ isActive && (
+				<Appearance
+					type={ FORMAT_TYPE }
+					value={ value }
+					onChange={ onChange }
+					label={ __( 'Badge appearance', 'formatting-extender' ) }
+					badge
+				/>
+			) }
+		</>
 	);
 }
