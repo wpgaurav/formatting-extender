@@ -8,6 +8,6 @@ The three screenshot PNGs in `.wordpress-org/` are unchanged originals linked fr
 
 These are the product page's existing demonstrations; their controls predate the expanded 3.0.1 editing and appearance UI. The readme captions describe their demonstrated behavior, while the readme instructions reflect the current release.
 
-Screenshots are deployed as WordPress.org directory assets, outside the installable plugin ZIP. The existing banners and icon are retained.
+Screenshots are deployed as WordPress.org directory assets, outside the installable plugin ZIP. The icon and banners were subsequently redesigned on September 27, 2026; their editable source and export notes are in `design/directory-assets/README.md`.
 
 The readme follows GT Performance's description, Links, installation, FAQ, external services, upgrade notice, and changelog structure. Formatting Extender's guessed Gatilab changelog/roadmap URLs returned 404 during verification, so links use its existing GitHub releases/issues instead.
