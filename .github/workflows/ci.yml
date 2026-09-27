@@ -1,0 +1,27 @@
+name: Checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+      - run: npm ci
+      - run: npm run lint:js
+      - run: npm test
+      - run: bash build.sh
+      - run: python3 -m unittest discover -s tests -p '*_test.py'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: formatting-extender-candidate
+          path: dist/

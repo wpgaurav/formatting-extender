@@ -1,37 +1,19 @@
-.fe-badge {
-	background-color: #3333aa;
-	border-radius: 2px;
-	color: #ffffff;
-	margin-inline-start: 4px;
-	font-size: 13px;
-	padding: 3px 5px 3px 4px;
-	position: relative;
-	text-transform: uppercase;
-}
-
-a.fe-badge {
-	border: 0;
-}
-
-.fe-highlight {
-	background: rgb(247, 220, 72);
-	padding: 0 3px;
-	color: #111111;
-}
-
 /* Add Class Popover */
-.fe-add-class-popover .components-popover__content {
+.fe-format-popover .components-popover__content {
 	padding: 16px;
-	min-width: 280px;
+	box-sizing: border-box;
+	width: min(360px, calc(100vw - 48px));
+	max-height: 70vh;
+	overflow-y: auto;
 }
 
-.fe-add-class-form {
+.fe-format-form {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
 }
 
-.fe-add-class-form .components-text-control__input {
+.fe-format-form .components-text-control__input {
 	font-family: monospace;
 }
 
@@ -72,3 +54,9 @@ a.fe-badge {
 	color: #757575;
 	white-space: nowrap;
 }
+
+.fe-format-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.fe-format-form fieldset { border: 0; padding: 0; margin: 0; }
+.fe-format-form legend { margin-bottom: 8px; font-weight: 600; }
+.fe-color-preview { padding: 10px; margin: 0; }
+.fe-class-suggestions[hidden] { display: none; }

@@ -28,4 +28,11 @@ CLAUDE.md
 *.swp
 *~
 .wordpress-org/
-LICENSE.txt
+
+
+scripts/
+tests/
+docs/
+artifacts/
+dist/
+eslint.config.cjs

@@ -16,3 +16,6 @@ Thumbs.db
 *.swp
 *.swo
 *~
+/dist/
+/artifacts/
+__pycache__/
