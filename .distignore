@@ -36,3 +36,5 @@ docs/
 artifacts/
 dist/
 eslint.config.cjs
+
+design/
