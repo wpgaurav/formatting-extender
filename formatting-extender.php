@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       Formatting Extender
- * Plugin URI:        https://gauravtiwari.org/snippet/formatting-extender/
+ * Plugin URI:        https://gauravtiwari.org/product/formatting-extender/
  * Description:       Extends the Block Editor with badges, highlights, and editable CSS classes.
  * Version:           3.0.1
  * Author:            Gaurav Tiwari

@@ -15,6 +15,14 @@ A lightweight WordPress plugin for badges, highlights, and custom CSS classes in
 
 Custom classes need CSS supplied by your theme or another plugin. They are not a CSS generator. Clearing block classes edits the block's complete custom-class field; clearing text classes removes only the Formatting Extender class format.
 
+## Links
+
+- [Product page and screenshots](https://gauravtiwari.org/product/formatting-extender/)
+- [Changelog](https://github.com/wpgaurav/formatting-extender/releases)
+- [WordPress.org support](https://wordpress.org/support/plugin/formatting-extender/)
+- [Community](https://gauravtiwari.org/portal/)
+- [More WordPress plugins](https://gauravtiwari.org/wordpress-plugins/)
+
 ## Install
 
 Install the WordPress.org plugin or upload the ZIP from a GitHub release. Source archives do not contain compiled assets; developers must build first. Existing `.fe-badge`, `.fe-highlight`, and `.fe-styled` content is preserved without migration.
